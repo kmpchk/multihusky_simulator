@@ -38,11 +38,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <arg name="kinect_enabled" default="false"/>
   <arg name="multimaster" default="true"/>
 
-  <arg name="use_robot_name1" default="robot1"/>
-  <arg name="use_robot_name2" default="robot2"/>
+  <arg name="world_name" default="$(find multihusky_gazebo)/worlds/wrong_turn.world"/>
+
+  <arg name="robot1_name" default="robot1"/>
+  <arg name="robot2_name" default="robot2"/>
+  <arg name="robot3_name" default="robot3"/>
+  <arg name="robot4_name" default="robot4"/>
+
+  <arg name="robot_count" default="2"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find multihusky_gazebo)/worlds/wrong_turn.world"/>
+    <arg name="world_name" value="$(arg world_name)"/>
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>
@@ -50,31 +56,49 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <arg name="debug" value="false"/>
   </include>
 
-  <group ns="$(arg use_robot_name1)">
-    <param name="tf_prefix" value="$(arg use_robot_name1)" />
+  <group if="$(eval arg('robot_count') == 1)">
+    <group ns="$(arg robot1_name)">
+    <param name="tf_prefix" value="$(arg robot1_name)"/>
     <include file="$(find multihusky_gazebo)/launch/spawn_multihusky.launch">
-        <arg name="robot_namespace" value="$(arg use_robot_name1)" />
-        <arg name="x" value="-5.0" />
-        <arg name="y" value="7.0" />
-        <arg name="z" value="0.0" />
+        <arg name="robot_namespace" value="$(arg robot1_name)"/>
+        <arg name="x" value="-5.0"/>
+        <arg name="y" value="7.0"/>
+        <arg name="z" value="0.0"/>
         <arg name="yaw" value="1.15" />
         <arg name="laser_enabled" value="$(arg laser_enabled)"/>
         <arg name="kinect_enabled" value="$(arg kinect_enabled)"/>
     </include>
   </group>
+  </group>
 
-  <group ns="$(arg use_robot_name2)">
-    <param name="tf_prefix" value="$(arg use_robot_name2)" />
+  <group if="$(eval arg('robot_count') == 2)">
+    <group ns="$(arg robot1_name)">
+    <param name="tf_prefix" value="$(arg robot1_name)"/>
     <include file="$(find multihusky_gazebo)/launch/spawn_multihusky.launch">
-        <arg name="robot_namespace" value="$(arg use_robot_name2)" />
-        <arg name="x" value="12.0" />
-        <arg name="y" value="-8.0" />
-        <arg name="z" value="0.0" />
-        <arg name="yaw" value="0.0" />
+        <arg name="robot_namespace" value="$(arg robot1_name)"/>
+        <arg name="x" value="-5.0"/>
+        <arg name="y" value="7.0"/>
+        <arg name="z" value="0.0"/>
+        <arg name="yaw" value="1.15"/>
+        <arg name="laser_enabled" value="$(arg laser_enabled)"/>
+        <arg name="kinect_enabled" value="$(arg kinect_enabled)"/>
+    </include>
+  </group>
+
+  <group ns="$(arg robot2_name)">
+    <param name="tf_prefix" value="$(arg robot2_name)"/>
+    <include file="$(find multihusky_gazebo)/launch/spawn_multihusky.launch">
+        <arg name="robot_namespace" value="$(arg robot2_name)"/>
+        <arg name="x" value="12.0"/>
+        <arg name="y" value="-8.0"/>
+        <arg name="z" value="0.0"/>
+        <arg name="yaw" value="0.0"/>
         <arg name="laser_enabled" value="$(arg laser_enabled)"/>
         <arg name="kinect_enabled" value="$(arg kinect_enabled)"/>
     </include>
   </group>  
+  </group>
+  
 
   <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find multihusky_viz)/rviz/multihusky_viz_withcamera_.rviz" output="screen"/> -->
 
