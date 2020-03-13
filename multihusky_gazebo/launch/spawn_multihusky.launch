@@ -35,11 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <launch>
     <arg name="robot_namespace" default="h0"/>
     <!-- Generate the tf_prefix from the namespace -->
-    <arg name="tfpre" default="$(arg robot_namespace)_tf" />
+    <arg name="tfpre" default="$(arg robot_namespace)" />
     <!-- Put value on the parameter server in the group's namespace -->
-    <param name="tf_prefix" value="$(arg robot_namespace)_tf" />
+    <param name="tf_prefix" value="$(arg robot_namespace)" />
     <arg name="x" default="0.0"/>
     <arg name="y" default="0.0"/>
+    <arg name="z" default="0.0"/>
     <arg name="yaw" default="0.0"/>
 
     <arg name="laser_enabled" default="$(optenv HUSKY_LMS1XX_ENABLED false)"/>
@@ -57,7 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- Spawn robot in gazebo -->
     <node name="spawn_husky_model" pkg="gazebo_ros" type="spawn_model" 
-        args="-x $(arg x) -y $(arg y) -Y $(arg yaw) -unpause -urdf -param robot_description -model Husky_$(arg robot_namespace)" respawn="false" output="screen" />
+        args="-x $(arg x) -y $(arg y) -z $(arg z) -Y $(arg yaw) -unpause -urdf -param robot_description -model Husky_$(arg robot_namespace)" respawn="false" output="screen" />
 
     <!-- Start the state publisher node in the namespace - uses the 
        joint states from gazebo
@@ -81,9 +82,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <!-- Start EKF for localization -->
     <node pkg="robot_localization_243" type="ekf_localization_node" name="ekf_localization">
         <rosparam command="load" file="$(find multihusky_gazebo)/config/localization.yaml" />
+	<remap from="odometry/filtered" to="odom"/>
         <!--rosparam param="base_link_frame" subst_value="True">$(arg tfpre)/base_link</rosparam-->
     </node>
 
+    
     <node pkg="tf" type="static_transform_publisher" name="map_odom_broadcaster" args="$(arg x) $(arg y) 0 $(arg yaw) 0 0 /map /$(arg tfpre)/odom 100" />
 
     <!-- Twister server for rviz control-->
